@@ -4,7 +4,7 @@ services:
     name: bookit-api
     env: python
     plan: starter
-    buildCommand: pip install --upgrade pip && pip install --only-binary=all -r requirements.txt
+    buildCommand: pip install --upgrade pip && pip install --force-reinstall --no-deps pydantic-core==2.3.0 && pip install -r requirements.txt
     startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL

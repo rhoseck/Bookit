@@ -48,7 +48,7 @@ def create_booking(db: Session, booking: BookingCreate, user_id: UUID) -> Bookin
     if not db_booking:
         raise HTTPException(status_code=500, detail="Error creating booking")
 
-    return BookingResponse.from_orm(db_booking)
+    return BookingResponse.model_validate(db_booking)
 
 
 def get_booking(db: Session, booking_id: UUID, current_user: User) -> BookingResponse:
@@ -64,7 +64,7 @@ def get_booking(db: Session, booking_id: UUID, current_user: User) -> BookingRes
         raise HTTPException(status_code=404, detail="Booking not found")
     if booking.user_id != current_user.id and current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
-    return BookingResponse.from_orm(booking)
+    return BookingResponse.model_validate(booking)
 
 
 def update_booking(db: Session, booking_id: UUID, booking_in: BookingUpdate, current_user: User) -> BookingResponse:
@@ -157,7 +157,7 @@ def update_booking(db: Session, booking_id: UUID, booking_in: BookingUpdate, cur
     db.commit()
     db.refresh(booking)
     
-    return BookingResponse.from_orm(booking)
+    return BookingResponse.model_validate(booking)
 
 
 def delete_booking(db: Session, booking_id: UUID, current_user: User) -> bool:
@@ -185,7 +185,7 @@ def get_user_bookings(db: Session, user_id: UUID) -> list[BookingResponse]:
         .options(joinedload(Booking.service))  # Eagerly load the service relationship
         .all()
     )
-    return [BookingResponse.from_orm(booking) for booking in bookings]
+    return [BookingResponse.model_validate(booking) for booking in bookings]
 
 def get_all_bookings(
     db: Session, 
@@ -206,7 +206,7 @@ def get_all_bookings(
         query = query.filter(Booking.end_time <= end_to)
         
     bookings = query.all()
-    return [BookingResponse.from_orm(booking) for booking in bookings]
+    return [BookingResponse.model_validate(booking) for booking in bookings]
     db.commit()
     return True
 
