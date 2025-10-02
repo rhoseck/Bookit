@@ -1,5 +1,5 @@
 # app/schemas/book_service.py
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from datetime import datetime
 from uuid import UUID
 
@@ -17,7 +17,8 @@ class ServiceRead(ServiceBase):
     id: UUID
     created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True
 
 class ServiceUpdate(BaseModel):
     name: str | None = None

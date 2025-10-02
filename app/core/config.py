@@ -1,5 +1,5 @@
 import os
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     database_url: str
@@ -11,11 +11,9 @@ class Settings(BaseSettings):
     environment: str = "development"
     debug: bool = True
     
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="allow"
-    )
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
     
     @property
     def is_production(self) -> bool:
