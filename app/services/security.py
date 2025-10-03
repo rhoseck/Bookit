@@ -3,15 +3,34 @@ from fastapi import Depends, HTTPException, status
 from app.services.auth import get_current_user
 from app.db.models import User
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Configure bcrypt with explicit settings to avoid issues
+pwd_context = CryptContext(
+    schemes=["bcrypt"], 
+    deprecated="auto",
+    bcrypt__rounds=12,  # Explicit rounds setting
+    bcrypt__ident="2b"  # Use 2b variant for better compatibility
+)
 
 def hash_password(password: str) -> str:
+    # Check both string length and byte length
+    if len(password) > 72:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password is too long. Maximum length is 72 characters."
+        )
     if len(password.encode('utf-8')) > 72:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Password is too long. Maximum length is 72 characters."
         )
-    return pwd_context.hash(password)
+    
+    try:
+        return pwd_context.hash(password)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Password hashing failed: {str(e)}"
+        )
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
