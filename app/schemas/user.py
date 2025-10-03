@@ -19,7 +19,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     name: str | None = None
     email: EmailStr | None = None
-    password: str | None = None
+    password: Annotated[str, constr(min_length=8, max_length=72)] | None = None
 
 class UserRead(UserBase):
     id: UUID
