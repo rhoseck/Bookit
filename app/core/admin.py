@@ -1,11 +1,18 @@
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import User, UserRole
-from app.services.security import hash_password
+from passlib.context import CryptContext
 from uuid import uuid4
 import logging
 
 logger = logging.getLogger(__name__)
+
+# Create local password context to avoid circular imports
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password_local(password: str) -> str:
+    """Local password hashing to avoid circular imports."""
+    return pwd_context.hash(password)
 
 def create_default_admin():
     """Create a default admin user if none exists."""
@@ -17,7 +24,7 @@ def create_default_admin():
         if not admin_user:
             # Create default admin
             admin_id = uuid4()
-            hashed_password = hash_password("admin123456")  # Default password
+            hashed_password = hash_password_local("admin123456")  # Default password
             
             default_admin = User(
                 id=admin_id,
