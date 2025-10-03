@@ -92,6 +92,24 @@ The application was migrated from integer primary keys to UUIDs for enhanced sec
 | `JWT_ALGORITHM` | Algorithm for JWT encoding | `HS256` | ❌ |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | JWT token expiration time | `60` | ❌ |
 
+## Authentication & Authorization
+
+### User Roles
+- **User**: Can create bookings, view own bookings, create reviews
+- **Admin**: Full system access, can manage all bookings, services, and users
+
+### Role-Based Permissions
+- **Service Management**: Admin only (create, update, delete)
+- **Booking Management**: Admin only (update, delete) | Users (create, view own)
+- **User Management**: Admin can view all users | Users can view/update own profile
+- **Reviews**: Users can create/edit own reviews | Admin can manage all reviews
+
+### Authentication Flow
+1. Register with `/auth/register` (creates User role by default)
+2. Login with `/auth/login` to receive JWT token
+3. Include token in `Authorization: Bearer <token>` header
+4. Admins must be promoted manually via database update
+
 ## API Documentation
 
 FastAPI automatically generates interactive API documentation:
@@ -120,11 +138,12 @@ FastAPI automatically generates interactive API documentation:
 - `DELETE /services/{id}` - Delete service (Admin only)
 
 #### Bookings
-- `POST /bookings` - Create booking
-- `GET /bookings` - List bookings (user: own, admin: all)
-- `GET /bookings/{id}` - Get booking details
-- `PATCH /bookings/{id}` - Update booking
-- `DELETE /bookings/{id}` - Cancel booking
+- `POST /bookings` - Create booking (Authenticated users)
+- `GET /bookings/me` - List user's own bookings (Authenticated users)
+- `GET /bookings` - List all bookings (Admin only)
+- `GET /bookings/{id}` - Get booking details (Owner or Admin)
+- `PATCH /bookings/{id}` - Update booking (Admin only)
+- `DELETE /bookings/{id}` - Cancel booking (Admin only)
 
 #### Reviews
 - `POST /reviews` - Create review
@@ -218,10 +237,18 @@ If you prefer manual setup:
 
 ### Production URLs
 
-After deployment, your API will be available at:
-- **Base URL**: `https://bookit-api.onrender.com` (or your custom domain)
-- **API Documentation**: `https://bookit-api.onrender.com/docs`
-- **Alternative Docs**: `https://bookit-api.onrender.com/redoc`
+After deployment, your API is available at:
+- **Base URL**: `https://bookit-dze3.onrender.com`
+- **API Documentation**: `https://bookit-dze3.onrender.com/docs`
+- **Alternative Docs**: `https://bookit-dze3.onrender.com/redoc`
+
+### Live Demo
+
+The BookIt API is currently deployed and accessible:
+- **Host**: Render.com
+- **Base URL**: https://bookit-dze3.onrender.com
+- **Database**: PostgreSQL on Render (Free Tier)
+- **Auto-deploy**: Enabled on `main` branch pushes
 
 ### Deployment Features
 

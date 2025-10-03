@@ -63,5 +63,7 @@ def delete_booking(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Only administrators can delete bookings")
     booking_service.delete_booking(db, booking_id, current_user)
     return None
