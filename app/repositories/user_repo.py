@@ -16,9 +16,23 @@ def create_user(db: Session, user: UserCreate) -> User:
         user_id = uuid4()
         print(f"Generated UUID: {user_id}")
         
+        # Validate password length before hashing
+        if len(user.password.encode('utf-8')) > 72:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Password is too long. Maximum length is 72 characters."
+            )
+        
         # Hash password
-        hashed_password = hash_password(user.password)
-        print("Password hashed successfully")
+        try:
+            hashed_password = hash_password(user.password)
+            print("Password hashed successfully")
+        except Exception as hash_error:
+            print(f"Password hashing error: {str(hash_error)}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Password is too long. Maximum length is 72 characters."
+            )
         
         # Create user instance
         db_user = models.User(
