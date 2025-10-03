@@ -1,21 +1,20 @@
-from pydantic import BaseModel
-from pydantic.types import StringConstraints
+from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional, Annotated
+from typing import Optional
 from app.schemas.book_service import ServiceRead
 from uuid import UUID
 
 class ReviewBase(BaseModel):
     booking_id: UUID
     rating: int
-    comment: Optional[Annotated[str, StringConstraints(max_length=500)]] = None
+    comment: Optional[str] = Field(None, max_length=500)
 
 class ReviewCreate(ReviewBase):
     pass
 
 class ReviewUpdate(BaseModel):
     rating: Optional[int] = None
-    comment: Optional[Annotated[str, StringConstraints(max_length=500)]] = None
+    comment: Optional[str] = Field(None, max_length=500)
 
 class ReviewRead(ReviewBase):
     id: UUID
