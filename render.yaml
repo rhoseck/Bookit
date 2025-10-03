@@ -3,8 +3,6 @@ services:
     name: bookit-db
     env: postgresql
     plan: free
-    databaseName: bookit_db
-    user: bookit_user
 
   - type: web
     name: bookit-api
