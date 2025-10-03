@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.logging import log_requests
+from app.core.admin import create_default_admin
 from app.api.routers import auth, user, book_service, booking, reviews
 from app.db.session import get_db, engine
 from app.db.base import Base
@@ -84,6 +85,11 @@ app.include_router(user.router)
 app.include_router(book_service.router)
 app.include_router(booking.router)
 app.include_router(reviews.router)
+
+@app.on_event("startup")
+async def startup_event():
+    """Create default admin user on startup if none exists."""
+    create_default_admin()
 
 
 @app.get("/", tags=["root"])

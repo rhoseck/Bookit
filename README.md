@@ -108,7 +108,46 @@ The application was migrated from integer primary keys to UUIDs for enhanced sec
 1. Register with `/auth/register` (creates User role by default)
 2. Login with `/auth/login` to receive JWT token
 3. Include token in `Authorization: Bearer <token>` header
-4. Admins must be promoted manually via database update
+4. For admin access, see "Admin Setup" section below
+
+### Admin Setup
+
+#### Default Admin Account
+The application automatically creates a default admin account on first startup:
+- **Email**: `admin@bookit.com`
+- **Password**: `admin123456`
+- **Role**: Admin
+
+**Security Note**: Change the default admin password after first login in production!
+
+#### Manual Admin Promotion
+To promote an existing user to admin:
+
+1. **Via Database (Recommended for Production)**:
+   ```sql
+   -- Connect to your PostgreSQL database
+   UPDATE users SET role = 'admin' WHERE email = 'user@example.com';
+   ```
+
+2. **Via pgAdmin (GUI Method)**:
+   - Connect to your Render PostgreSQL database
+   - Navigate to: `Databases` → `your_db` → `Schemas` → `public` → `Tables` → `users`
+   - Right-click → `View/Edit Data` → `All Rows`
+   - Find the user and change `role` from `user` to `admin`
+   - Save changes
+
+3. **Connection Details for Database Access**:
+   - Get connection string from Render Dashboard → PostgreSQL service
+   - Use external connection URL for tools like pgAdmin
+   - Format: `postgresql://user:pass@host:port/database`
+
+#### Testing Admin Features
+Once you have admin access, you can:
+- ✅ Create, update, delete services (`/services/*`)
+- ✅ View all bookings (`/bookings`)
+- ✅ Update/cancel any booking (`/bookings/{id}`)
+- ✅ Manage all reviews (`/reviews/*`)
+- ✅ View all users in the system
 
 ## API Documentation
 
