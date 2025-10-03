@@ -3,13 +3,8 @@ from fastapi import Depends, HTTPException, status
 from app.services.auth import get_current_user
 from app.db.models import User
 
-# Configure bcrypt with explicit settings to avoid issues
-pwd_context = CryptContext(
-    schemes=["bcrypt"], 
-    deprecated="auto",
-    bcrypt__rounds=12,  # Explicit rounds setting
-    bcrypt__ident="2b"  # Use 2b variant for better compatibility
-)
+# Simplified bcrypt configuration to avoid version detection issues
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
     # Check both string length and byte length
@@ -27,9 +22,10 @@ def hash_password(password: str) -> str:
     try:
         return pwd_context.hash(password)
     except Exception as e:
+        print(f"Bcrypt error: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Password hashing failed: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password hashing failed due to server configuration"
         )
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
