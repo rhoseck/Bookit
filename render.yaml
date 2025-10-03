@@ -1,10 +1,18 @@
 services:
-  # BookIt API Web Service
+  # PostgreSQL Database
+  - type: pserv
+    name: bookit-db
+    env: postgresql
+    plan: free
+    databaseName: bookit_db
+    user: bookit_user
+    ipAllowList: []
+
+  # BookIt API Web Service  
   - type: web
     name: bookit-api
     runtime: docker
     plan: free
-    repo: https://github.com/rhoseck/Bookit.git
     branch: main
     healthCheckPath: /
     envVars:
@@ -18,10 +26,3 @@ services:
         value: HS256
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: 30
-
-  # PostgreSQL Database
-  - type: pserv
-    name: bookit-db
-    plan: free
-    databaseName: bookit_db
-    user: bookit_user
