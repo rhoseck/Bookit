@@ -1,9 +1,9 @@
-services:
-  - type: pserv
-    name: bookit-db
-    env: postgresql
-    plan: free
+databases:
+  - name: bookit-db
+    databaseName: bookit_db
+    user: bookit_user
 
+services:
   - type: web
     name: bookit-api
     runtime: docker
@@ -12,7 +12,7 @@ services:
       - key: DATABASE_URL
         fromDatabase:
           name: bookit-db
-          property: internalConnectionString
+          property: connectionString
       - key: SECRET_KEY
         generateValue: true
       - key: ALGORITHM
